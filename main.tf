@@ -51,10 +51,20 @@ provisioner "file" {
     source      = "${path.module}/scripts/ansible.sh"
     destination = "/home/ansible/ansible.sh"
     }
+provisioner "file" {
+    source      = "${path.module}/ansible/playbook.yml"
+    destination = "/home/ansible/playbook.yml"
+    }
+provisioner "file" {
+    source      = "${path.module}/ansible/master-playbook.yml"
+    destination = "/home/ansible/master-playbook.yml"
+    }
 provisioner "remote-exec" {
   inline = [
     "chmod +x ./ansible.sh",
-    "./ansible.sh"
+    "./ansible.sh",
+    "ansible-playbook playbook.yml",
+    "ansible-playbook master-playbook.yml"
   ]
 }
 }
