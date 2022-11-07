@@ -1,0 +1,87 @@
+{
+    "variables": {
+      "vsphere_user": "{{ env `TF_VAR_vsphere_user`}}",
+      "vsphere_password": "{{ env `TF_VAR_vsphere_password`}}",
+      "username": "{{ env `PKR_VAR_username`}}",
+      "password": "{{ env `PKR_VAR_password`}}"
+    },
+    "builders": [
+      {
+        "type": "vsphere-iso",
+
+        "vcenter_server": "192.168.1.201",
+        "username": "{{ user `vsphere_user`}}",
+        "password": "{{ user `vsphere_password`}}",
+        "insecure_connection": "true",
+
+        "cluster": "home-lab",
+        "convert_to_template": "true",
+        "datacenter": "DC-01",
+        "datastore": "datastore1",
+        
+        "folder": "Templates",
+
+        "vm_name": "ubuntu18",
+        "host": "192.168.1.200",
+
+        "guest_os_type": "ubuntu64Guest",
+
+        "ssh_username": "{{ user `username`}}",
+        "ssh_password": "{{ user `password`}}",
+
+        "CPUs": "2",
+        "RAM": "8192",
+        "RAM_reserve_all": true,
+
+        "disk_controller_type": "pvscsi",
+        "storage": [
+          {
+            "disk_size": "40960",
+            "disk_thin_provisioned": true
+          }
+        ],
+        "network_adapters": [
+          {
+            "network": "VM Network",
+            "network_card": "vmxnet3"
+          }
+        ],
+        "iso_checksum":"sha256:F730BE589AA1BA923EBE6ECA573FA66D09BA14C4C104DA2C329DF652D42AFF11",
+        "iso_paths": "[datastore1] ISOs/ubuntu-18.04.6-server-amd64.iso",
+
+        "floppy_files": [
+            "./preseed.cfg"
+          ],
+        "boot_command": [
+          "<enter><wait><f6><wait><esc><wait>",
+          "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+          "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+          "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+          "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+          "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+          "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+          "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+          "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+          "<bs><bs><bs>",
+          "/install/vmlinuz",
+          " initrd=/install/initrd.gz",
+          " priority=critical",
+          " locale=en_US",
+          " auto-install/enable=true",
+          " file=/media/preseed.cfg",
+          "<enter>"
+        ],
+        "boot_order": "disk,cdrom"
+      }
+    ],
+    "provisioners": [
+      {
+        "inline": [
+          "echo 'Packer Template Build -- Complete'"
+        ],
+        "type": "shell"
+      }
+    ]
+  }
+  
+  
