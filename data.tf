@@ -1,6 +1,6 @@
 #Read environment variables set from setenv.ps1
 data "external" "env" {
-  program = ["powershell.exe", "${path.module}/env.ps1"]
+  program = ["powershell.exe", "${path.module}/scripts/env.ps1"]
 }
 #vSphere straightforward-ness
 data "vsphere_datacenter" "datacenter" {
