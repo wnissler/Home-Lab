@@ -1,0 +1,40 @@
+- name: Configuring containerd on all hosts...
+  hosts: all
+  roles:
+    - configure-containerd
+- name: Installing kubernetes packages on all hosts...
+  hosts: all
+  roles:
+    - install-k8s-packages
+- name: Disabling swap on all hosts...
+  hosts: all
+  roles:
+    - disable-swap
+- name: Configuring networks on hosts...
+  hosts: all
+  roles:
+     - configure-network-rules
+- name: Installing kubectl on master node...
+  hosts: kubemaster
+  roles:
+    - install-kubectl
+- name: Deploying kubernetes cluster...
+  hosts: kubemaster
+  roles:
+    - deploy-kubernetes
+- name: Getting token from the master node...
+  hosts: kubemaster
+  roles:
+    - get-join-command
+- name: Joining workers to the cluster...
+  hosts: kubeworker
+  roles:
+    - join-cluster
+- name: Installing Helm on the master...
+  hosts: kubemaster
+  roles:
+    - install-helm
+- name: Installing Metallb and Nginx Ingress Controller...
+  hosts: kubemaster
+  roles:
+    - install-metallb

@@ -52,21 +52,45 @@ provisioner "file" {
     destination = "/home/ansible/ansible.sh"
     }
 provisioner "file" {
-    source      = "${path.module}/ansible/playbook.yml"
-    destination = "/home/ansible/playbook.yml"
-    }
+  source = "${path.module}/ansible/roles"
+  destination = "/home/ansible"
+}
 provisioner "file" {
-    source      = "${path.module}/ansible/master-playbook.yml"
-    destination = "/home/ansible/master-playbook.yml"
+    source      = "${path.module}/ansible/install-kubernetes.yml"
+    destination = "/home/ansible/install-kubernetes.yml"
     }
+# provisioner "file" {
+#     source      = "${path.module}/ansible/playbook.yml"
+#     destination = "/home/ansible/playbook.yml"
+#     }
+# provisioner "file" {
+#     source      = "${path.module}/ansible/master-playbook.yml"
+#     destination = "/home/ansible/master-playbook.yml"
+#     }
+# provisioner "file" {
+#     source      = "${path.module}/ansible/worker-playbook.yml"
+#     destination = "/home/ansible/worker-playbook.yml"
+#     }
 provisioner "remote-exec" {
   inline = [
-    "chmod +x ./ansible.sh",
-    "./ansible.sh",
-    "ansible-playbook playbook.yml",
-    "ansible-playbook master-playbook.yml"
+    "chmod +x /home/ansible/ansible.sh",
+    "/home/ansible/ansible.sh",
+    "ansible-playbook install-kubernetes.yml -v"
+    # "ansible-playbook /home/ansible/playbook.yml",
+    # "ansible-playbook /home/ansible/master-playbook.yml",
+    # "ansible-playbook /home/ansible/worker-playbook.yml"
   ]
 }
+}
+
+resource "local_file" "inventory" {
+  content = templatefile("${path.module}/ansible/inventory.tpl",
+    {
+      master_nodes = vsphere_virtual_machine.master.default_ip_address
+      worker_nodes = vsphere_virtual_machine.node.*.default_ip_address
+    }
+  )
+  filename = "./ansible/inventory.cfg"
 }
 
 resource "vsphere_virtual_machine" "master" {
@@ -136,16 +160,6 @@ resource "vsphere_virtual_machine" "node" {
       dns_server_list = var.dns
     }
   }
-}
-
-resource "local_file" "inventory" {
-  content = templatefile("${path.module}/ansible/inventory.tpl",
-    {
-      master_nodes = vsphere_virtual_machine.master.default_ip_address
-      worker_nodes = vsphere_virtual_machine.node.*.default_ip_address
-    }
-  )
-  filename = "./ansible/inventory.cfg"
 }
 
 

@@ -1,0 +1,7 @@
+- name: Installing kubectl on master node..
+  become: true
+  apt:
+    name: kubectl
+    state: present
+    update_cache: yes
+    force: yes

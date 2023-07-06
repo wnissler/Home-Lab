@@ -1,0 +1,11 @@
+- name: Copying join command...
+  become: true
+  copy:
+    src: /tmp/join_command
+    dest: /tmp/join_command
+    mode: 0777
+
+- name: Joining nodes to the cluster...
+  become: true
+  command: sh /tmp/join_command
+  register: joined_or_not

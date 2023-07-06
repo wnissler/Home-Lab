@@ -1,0 +1,8 @@
+- name: Downloading and executing Helm script...
+  get_url: 
+    url: https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+    dest: /tmp/get_helm.sh 
+    mode: 0755
+
+- name: Executing the script...
+  shell: /tmp/get_helm.sh

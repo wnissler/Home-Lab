@@ -1,3 +1,4 @@
+#!/usr/local/microsoft/powershell/7/pwsh
 #Must run ./setenv.ps1 first!
 ConvertTo-Json @{
   vsphere_user =  $Env:TF_VAR_vsphere_user;

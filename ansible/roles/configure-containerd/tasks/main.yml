@@ -1,0 +1,26 @@
+    - name: Create containerd config file
+      become: true
+      file:
+        path: "/etc/modules-load.d/containerd.conf"
+        state: "touch"
+
+    - name: Containerd prereqs
+      become: true
+      blockinfile:
+        path: "/etc/modules-load.d/containerd.conf"
+        block: |
+              overlay
+              br_netfilter
+
+    - name: Loading required containerd modules
+      become: true
+      shell: |
+              sudo modprobe overlay
+              sudo modprobe br_netfilter
+
+    - name: Configure containerd network settings
+      become: true
+      file:
+        path: "/etc/sysctl.d/99-kubernetes-cri.conf"
+        state: "touch"
+        

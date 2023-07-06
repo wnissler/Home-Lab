@@ -1,0 +1,23 @@
+- name: Modifying kube-proxy configmap...
+  shell: "kubectl get configmap kube-proxy -n kube-system -o yaml | sed -e 's/strictARP: false/strictARP: true/' | kubectl apply -f - -n kube-system"
+  register: res
+
+- name: Copy config file...
+  copy: 
+    src: "{{ role_path }}/files/config.yml"
+    dest: /tmp/config.yml
+    owner: ansible
+    mode: "0755"
+
+- name: Install metallb namespace...
+  shell: kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.10.2/manifests/namespace.yaml
+  
+- name: Install metallb CRs...
+  shell: kubectl apply -f /tmp/config.yml
+
+- name: Install metallb...
+  shell: kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.10.2/manifests/metallb.yaml
+  ignore_errors: true
+
+- name: Install nginx ingress controller...
+  shell: helm install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx --namespace ingress-nginx --create-namespace

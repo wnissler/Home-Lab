@@ -1,7 +1,7 @@
-[master]
+[kubemaster]
 ${master_nodes}
 
-[worker]
+[kubeworker]
 %{ for ip in worker_nodes ~}
 ${ip}
 %{ endfor ~}

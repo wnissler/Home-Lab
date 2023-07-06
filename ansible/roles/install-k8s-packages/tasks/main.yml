@@ -1,0 +1,52 @@
+  - name: Install containerd and update
+    become: true
+    apt:
+      name: "containerd"
+      state: present
+      update_cache: true
+
+  - name: Installs required apt packages
+    become: true
+    apt:
+      name: "{{ packages }}"
+      state: present
+      update_cache: yes
+    vars:
+      packages:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - gnupg-agent
+        - software-properties-common
+
+  - name: Add an apt signing key for Kubernetes
+    become: true
+    apt_key:
+      url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+      state: present
+
+  - name: Adding apt repository for Kubernetes
+    become: true
+    apt_repository:
+      repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+      state: present
+      filename: kubernetes.list
+
+  - name: Install Kubernetes binaries
+    become: true
+    apt:
+      name: "{{ packages }}"
+      state: present
+      update_cache: yes
+    vars:
+      packages:
+        - kubelet
+        - kubeadm
+        - kubectl
+
+  - name: Restart kubelet
+    become: true
+    service:
+      name: kubelet
+      daemon_reload: yes
+      state: restarted
